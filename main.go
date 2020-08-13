@@ -13,10 +13,11 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os"
+	"os",
 
 	"golang.org/x/oauth2/google"
-	"google.golang.org/api/cloudkms/v1"
+	"google.golang.org/api/cloudkms/v1",
+    "gopkg.in/yaml.v2"
 )
 
 var (
