@@ -27,7 +27,13 @@ var (
 
 
 type X509Subject struct {
-    C string `yaml:"C"`
+    C               string `yaml:"C"`
+    ST              string `yaml:"ST"`
+    L               string `yaml:"L"`
+    O               string `yaml:"O"`
+    OU              string `yaml:"OU"`
+    CN              string `yaml:"CN"`
+    emailAddress    string `yaml:"emailAddress"`
 }
 
 
@@ -37,16 +43,6 @@ type Config struct {
 
 
 func main() {
-	keyFlag := flag.String("key", "", "")
-	stateFlag := flag.String("state", "", "")
-	localityFlag := flag.String("locality", "", "")
-	commonNameFlag := flag.String("common-name", "", "")
-	orgFlag := flag.String("org", "", "")
-	orgUnitFlag := flag.String("org-unit", "", "")
-	emailFlag := flag.String("email", "", "")
-	outFlag := flag.String("out", "out.csr", "")
-	flag.Parse()
-
 	oauthClient, err := google.DefaultClient(context.Background(), cloudkms.CloudPlatformScope)
 	if err != nil {
 		log.Fatal(err)
@@ -73,20 +69,20 @@ func main() {
 	}
 
 	subj := pkix.Name{
-		CommonName:         *commonNameFlag,
-		Organization:       []string{*orgFlag},
-		OrganizationalUnit: []string{*orgUnitFlag},
+		CommonName:         spec.Subject.CN,
+		Organization:       []string{spec.Subject.O},
+		OrganizationalUnit: []string{spec.Subject.OU},
 		Country:            []string{spec.Subject.C},
-		Province:           []string{*stateFlag},
-		Locality:           []string{*localityFlag},
+		Province:           []string{spec.Subject.ST},
+		Locality:           []string{spec.Subject.L},
 	}
 
 	rawSubj := subj.ToRDNSequence()
 	template := &x509.CertificateRequest{}
 
-	if *emailFlag != "" {
+	if spec.Subject.emailAddress != "" {
 		rawSubj = append(rawSubj, []pkix.AttributeTypeAndValue{
-			{Type: oidEmailAddress, Value: *emailFlag},
+			{Type: oidEmailAddress, Value: spec.Subject.emailAddress},
 		})
 
 		//template.EmailAddresses = []string{*emailFlag}
