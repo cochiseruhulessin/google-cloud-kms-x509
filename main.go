@@ -25,8 +25,12 @@ var (
 
 func main() {
 	keyFlag := flag.String("key", "", "")
+	countryFlag := flag.String("country", "", "")
+	stateFlag := flag.String("state", "", "")
+	localityFlag := flag.String("locality", "", "")
 	commonNameFlag := flag.String("common-name", "", "")
 	orgFlag := flag.String("org", "", "")
+	orgUnitFlag := flag.String("org-unit", "", "")
 	emailFlag := flag.String("email", "", "")
 	outFlag := flag.String("out", "out.csr", "")
 	flag.Parse()
@@ -49,10 +53,10 @@ func main() {
 	subj := pkix.Name{
 		CommonName:         *commonNameFlag,
 		Organization:       []string{*orgFlag},
-		OrganizationalUnit: []string{""},
-		Country:            []string{"US"},
-		Province:           []string{"California"},
-		Locality:           []string{"San Francisco"},
+		OrganizationalUnit: []string{*orgUnitFlag},
+		Country:            []string{*countryFlag},
+		Province:           []string{*stateFlag},
+		Locality:           []string{*localityFlag},
 	}
 
 	rawSubj := subj.ToRDNSequence()
