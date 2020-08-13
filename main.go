@@ -12,11 +12,12 @@ import (
 	"flag"
 	"fmt"
 	"io"
+    "io/ioutil"
 	"log"
-	"os",
+	"os"
 
 	"golang.org/x/oauth2/google"
-	"google.golang.org/api/cloudkms/v1",
+	"google.golang.org/api/cloudkms/v1"
     "gopkg.in/yaml.v2"
 )
 
@@ -24,9 +25,19 @@ var (
 	oidEmailAddress = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 1}
 )
 
+
+type X509Subject struct {
+    C string `yaml:"C"`
+}
+
+
+type Config struct {
+    Subject X509Subject `yaml:"subject"`
+}
+
+
 func main() {
 	keyFlag := flag.String("key", "", "")
-	countryFlag := flag.String("country", "", "")
 	stateFlag := flag.String("state", "", "")
 	localityFlag := flag.String("locality", "", "")
 	commonNameFlag := flag.String("common-name", "", "")
@@ -37,6 +48,16 @@ func main() {
 	flag.Parse()
 
 	oauthClient, err := google.DefaultClient(context.Background(), cloudkms.CloudPlatformScope)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+    spec := Config{}
+    data, err := ioutil.ReadFile("csr.yaml")
+    if err != nil {
+        log.Fatal(err)
+    }
+    err = yaml.Unmarshal([]byte(data), &spec)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -55,7 +76,7 @@ func main() {
 		CommonName:         *commonNameFlag,
 		Organization:       []string{*orgFlag},
 		OrganizationalUnit: []string{*orgUnitFlag},
-		Country:            []string{*countryFlag},
+		Country:            []string{spec.Subject.C},
 		Province:           []string{*stateFlag},
 		Locality:           []string{*localityFlag},
 	}
