@@ -67,7 +67,7 @@ func main() {
 			{Type: oidEmailAddress, Value: *emailFlag},
 		})
 
-		template.EmailAddresses = []string{*emailFlag}
+		//template.EmailAddresses = []string{*emailFlag}
 	}
 
 	asn1Subj, err := asn1.Marshal(rawSubj)
