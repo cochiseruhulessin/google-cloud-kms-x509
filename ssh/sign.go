@@ -55,12 +55,18 @@ func SignSshPublicKey(backend backends.Backend, key ssh.PublicKey, ca *dto.Signe
     CertType: ssh.UserCert,
     ValidAfter: 0,
     ValidBefore: ssh.CertTimeInfinity,
-    ValidPrincipals: []string{"guacd"},
+    ValidPrincipals: []string{"cochise"},
     Serial: 1,
     Permissions: ssh.Permissions{
-      CriticalOptions: map[string]string{},
+      CriticalOptions: map[string]string{
+        "force-command": "python3",
+      },
       Extensions:      map[string]string{
         "permit-pty": "",
+        "no-agent-forwarding": "",
+        "no-port-forwarding": "",
+        "no-user-rc": "",
+        "no-x11-forwarding": "",
       },
     },
     Reserved: []byte{},
