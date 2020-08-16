@@ -6,8 +6,9 @@ import (
   "log"
   "os"
 
-  "github.com/cochiseruhulessin/cloud-pki/x509"
   "github.com/cochiseruhulessin/cloud-pki/backends"
+  "github.com/cochiseruhulessin/cloud-pki/ssh"
+  "github.com/cochiseruhulessin/cloud-pki/x509"
 )
 
 
@@ -31,6 +32,8 @@ func main() {
 
   backend := backends.NewGoogleBackend()
   switch op := os.Args[1]; op {
+    case "ssh":
+      ssh.Handle(buf, os.Args[2:], &backend)
     case "x509":
       x509.Handle(buf, os.Args[2:], &backend)
     default:
