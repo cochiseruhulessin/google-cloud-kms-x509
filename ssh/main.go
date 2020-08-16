@@ -56,11 +56,13 @@ type SignSshPublicKeyCommand struct {
 
 
 func SignSshPublicKey(params *SignSshPublicKeyCommand) {
-  signer, err := ssh.NewSignerFromSigner(
-    params.backend.GetSigner(params.ca.KeyID))
+  signer, err := NewAlgorithmSignerFromSigner(
+    params.backend.GetSigner(params.ca.KeyID),
+    "rsa-sha2-256")
   if err != nil {
     log.Fatal(err)
   }
+
   crt := ssh.Certificate{
     Key: params.key,
     CertType: ssh.UserCert,
@@ -78,7 +80,6 @@ func SignSshPublicKey(params *SignSshPublicKeyCommand) {
   }
 
   crt.SignCert(rand.Reader, signer)
-  log.Fatal(crt.Signature)
   os.Stdout.Write(ssh.MarshalAuthorizedKey(&crt))
   return
 }
