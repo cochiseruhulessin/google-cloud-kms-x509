@@ -56,13 +56,18 @@ type SignSshPublicKeyCommand struct {
 
 
 func SignSshPublicKey(params *SignSshPublicKeyCommand) {
+  signer, err := ssh.NewSignerFromSigner(
+    params.backend.GetSigner(params.ca.KeyID))
+  if err != nil {
+    log.Fatal(err)
+  }
   crt := ssh.Certificate{
     Key: params.key,
     CertType: ssh.UserCert,
     ValidAfter: 0,
     ValidBefore: ssh.CertTimeInfinity,
     ValidPrincipals: []string{"guacd"},
-    Serial: 0,
+    Serial: 1,
     Permissions: ssh.Permissions{
       CriticalOptions: map[string]string{},
       Extensions:      map[string]string{
@@ -71,7 +76,9 @@ func SignSshPublicKey(params *SignSshPublicKeyCommand) {
     },
     Reserved: []byte{},
   }
-  crt.SignCert(rand.Reader, params.backend.GetSecureShellSigner(params.ca.KeyID))
+
+  crt.SignCert(rand.Reader, signer)
+  log.Fatal(crt.Signature)
   os.Stdout.Write(ssh.MarshalAuthorizedKey(&crt))
   return
 }
