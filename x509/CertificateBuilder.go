@@ -15,6 +15,7 @@ type CertificateBuilder struct {
   backend backends.Backend
   opts dto.X509ConfigurationDTO
   issuer *x509.Certificate
+  constraints dto.CertificateConstraints
   selfSigned bool
 }
 
@@ -31,7 +32,7 @@ func (self *CertificateBuilder) FromCSR(csr *x509.CertificateRequest) (*x509.Cer
     URIs: csr.URIs,
     ExtraExtensions: csr.Extensions,
   }
-  self.opts.Constraints.GetTimeBounds(&crt, &self.opts.Defaults)
+  self.constraints.GetTimeBounds(&crt, &self.opts.Defaults)
 
   serial, err := GenerateX509Serial()
   if err != nil {
@@ -39,12 +40,12 @@ func (self *CertificateBuilder) FromCSR(csr *x509.CertificateRequest) (*x509.Cer
   }
   crt.SerialNumber = serial
 
-  err = self.setKeyUsage(&crt, self.opts.Constraints.Usage)
+  err = self.setKeyUsage(&crt, self.constraints.Usage)
   if err != nil {
     return nil, err
   }
 
-  err = self.setExtendedKeyUsage(&crt, self.opts.Constraints.ExtendedUsage)
+  err = self.setExtendedKeyUsage(&crt, self.constraints.ExtendedUsage)
   if err != nil {
     return nil, err
   }
@@ -58,11 +59,11 @@ func (self *CertificateBuilder) FromCSR(csr *x509.CertificateRequest) (*x509.Cer
     crt.AuthorityKeyId = ski
   }
 
-  if self.opts.Constraints.CA.Issuer {
+  if self.constraints.CA.Issuer {
     crt.IsCA = true
     crt.BasicConstraintsValid = true
-    if self.opts.Constraints.CA.PathLength > -1 {
-      crt.MaxPathLen = self.opts.Constraints.CA.PathLength
+    if self.constraints.CA.PathLength > -1 {
+      crt.MaxPathLen = self.constraints.CA.PathLength
       if crt.MaxPathLen == 0 {
         crt.MaxPathLenZero = true
       }

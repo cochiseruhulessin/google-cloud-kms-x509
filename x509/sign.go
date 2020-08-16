@@ -50,7 +50,7 @@ func SignCertificate(buf []byte, args []string, backend backends.Backend) {
     log.Fatal("failed to decode PEM block containing public key")
   }
 
-  constraints := dto.CertificateConstraints{}
+  constraints := opts.Constraints
   if constraintsConf != "" {
     err = constraints.Load(constraintsConf, nil)
     if err != nil { log.Fatal(err) }
@@ -72,6 +72,7 @@ func SignCertificate(buf []byte, args []string, backend backends.Backend) {
     opts: opts,
     issuer: issuer,
     selfSigned: selfSigned,
+    constraints: constraints,
   }
 
   crt, err := builder.FromCSR(csr)
