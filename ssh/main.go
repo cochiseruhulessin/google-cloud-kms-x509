@@ -15,6 +15,8 @@ func Handle(buf []byte, args []string, backend backends.Backend) {
   switch op := args[0]; op {
     case "sign":
       HandleSign(buf, args[1:], backend)
+    case "authorized-key":
+      HandleAuthorizedKey(buf, args[1:], backend)
     default:
       log.Fatal("Unknown operation: ", op)
       os.Exit(1)

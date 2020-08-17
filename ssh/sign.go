@@ -59,7 +59,7 @@ func SignSshPublicKey(backend backends.Backend, key ssh.PublicKey, ca *dto.Signe
     Serial: 1,
     Permissions: ssh.Permissions{
       CriticalOptions: map[string]string{
-        "force-command": "python3",
+        "force-command": "vim",
       },
       Extensions:      map[string]string{
         "permit-pty": "",

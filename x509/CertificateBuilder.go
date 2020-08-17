@@ -30,7 +30,6 @@ func (self *CertificateBuilder) FromCSR(csr *x509.CertificateRequest) (*x509.Cer
     EmailAddresses: csr.EmailAddresses,
     IPAddresses: csr.IPAddresses,
     URIs: csr.URIs,
-    ExtraExtensions: csr.Extensions,
   }
   self.constraints.GetTimeBounds(&crt, &self.opts.Defaults)
 
